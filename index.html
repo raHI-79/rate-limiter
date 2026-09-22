@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Rate Limiting Demo</title>
+    <title>Rate Limiting</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: Arial;
             background: #f2f4f7;
             text-align: center;
             padding-top: 100px;
@@ -26,9 +26,6 @@
             cursor: pointer;
             font-size: 16px;
         }
-        button:hover {
-            background: #1d4ed8;
-        }
         #result {
             margin-top: 20px;
             font-size: 18px;
@@ -36,38 +33,34 @@
     </style>
 </head>
 <body>
-    <div class="box">
-        <h1>Rate Limiting</h1>
-        <p>Maximum 5 requests per minute</p>
-        <button onclick="sendRequest()">
-            Send Request
-        </button>
-        <div id="result">
-            Requests: 0 / 5
-        </div>
+<div class="box">
+    <h1>Rate Limiting</h1>
+    <p>Maximum 5 requests per minute</p>
+    <button onclick="sendRequest()">Send Request</button>
+    <div id="result">
+        Requests: 0 / 5
     </div>
-    <script>
-        let count = 0;
-        function sendRequest() {
-            fetch("http://localhost:8080/")
-                .then(response => {
-                    return response.text().then(data => {
-                        if (response.status === 429) {
-                            document.getElementById("result").innerText =
-                                data;
-                        } else {
-                            count++;
-                            document.getElementById("result").innerText =
-                                "Request accepted!  Requests: "
-                                + count + " / 5";
-                        }
-                    });
-                })
-                .catch(error => {
-                    document.getElementById("result").innerText =
-                        "Server is not running.";
-                });
-        }
-    </script>
+</div>
+<script>
+let count = 0;
+function sendRequest() {
+    fetch("/request")
+        .then(async response => {
+            let data = await response.text();
+            if (response.status == 429) {
+                document.getElementById("result").innerText =
+                    "Too Many Requests! Try again later.";
+                return;
+            }
+            count++;
+            document.getElementById("result").innerText =
+                "Request accepted! Requests: " + count + " / 5";
+        })
+        .catch(() => {
+            document.getElementById("result").innerText =
+                "Server is not running.";
+        });
+}
+</script>
 </body>
 </html>
