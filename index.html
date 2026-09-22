@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rate Limiting Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f4f7;
+            text-align: center;
+            padding-top: 100px;
+        }
+        .box {
+            background: white;
+            width: 400px;
+            margin: auto;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px #ccc;
+        }
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #1d4ed8;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>Rate Limiting</h1>
+        <p>Maximum 5 requests per minute</p>
+        <button onclick="sendRequest()">
+            Send Request
+        </button>
+        <div id="result">
+            Requests: 0 / 5
+        </div>
+    </div>
+    <script>
+        let count = 0;
+        function sendRequest() {
+            fetch("http://localhost:8080/")
+                .then(response => {
+                    return response.text().then(data => {
+                        if (response.status === 429) {
+                            document.getElementById("result").innerText =
+                                data;
+                        } else {
+                            count++;
+                            document.getElementById("result").innerText =
+                                "Request accepted!  Requests: "
+                                + count + " / 5";
+                        }
+                    });
+                })
+                .catch(error => {
+                    document.getElementById("result").innerText =
+                        "Server is not running.";
+                });
+        }
+    </script>
+</body>
+</html>
